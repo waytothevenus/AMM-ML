@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vulnerability Risk Assessment Dashboard</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --surface: #1e293b;
+        --border: #334155;
+        --text: #e2e8f0;
+        --text-dim: #94a3b8;
+        --critical: #ef4444;
+        --high: #f97316;
+        --medium: #eab308;
+        --low: #22c55e;
+        --accent: #3b82f6;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: 1rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      h2 {
+        font-size: 1.1rem;
+        color: var(--text-dim);
+        margin-bottom: 0.5rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem;
+      }
+      .metric {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+      .metric.critical {
+        color: var(--critical);
+      }
+      .metric.high {
+        color: var(--high);
+      }
+      .metric.medium {
+        color: var(--medium);
+      }
+      .metric.low {
+        color: var(--low);
+      }
+      .label {
+        font-size: 0.85rem;
+        color: var(--text-dim);
+        margin-top: 0.25rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.5rem 0.75rem;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--text-dim);
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+      }
+      .risk-bar {
+        height: 8px;
+        border-radius: 4px;
+        background: var(--border);
+      }
+      .risk-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+      }
+      .stale {
+        color: var(--critical);
+        font-weight: 600;
+      }
+      .fresh {
+        color: var(--low);
+      }
+      #loading {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-dim);
+      }
+      .tab-bar {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .tab {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+      }
+      .tab.active {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+      }
+      .section {
+        display: none;
+      }
+      .section.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Vulnerability Risk Assessment</h1>
+
+    <div class="tab-bar">
+      <div class="tab active" data-tab="overview">Overview</div>
+      <div class="tab" data-tab="vulns">Vulnerabilities</div>
+      <div class="tab" data-tab="assets">Assets</div>
+      <div class="tab" data-tab="prioritization">Prioritization</div>
+      <div class="tab" data-tab="freshness">Data Freshness</div>
+    </div>
+
+    <div id="loading">Loading data…</div>
+
+    <!-- Overview -->
+    <div id="overview" class="section active">
+      <div class="grid" id="summary-cards"></div>
+      <div class="card" style="margin-bottom: 1rem">
+        <h2>Top 10 Risk Pairs</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Vuln</th>
+              <th>Asset</th>
+              <th>Risk</th>
+              <th>Rank</th>
+            </tr>
+          </thead>
+          <tbody id="top-pairs"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Vulnerabilities -->
+    <div id="vulns" class="section">
+      <div class="card">
+        <h2>Vulnerabilities</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>CVE</th>
+              <th>CVSS</th>
+              <th>Exploit</th>
+              <th>KEV</th>
+              <th>Risk</th>
+            </tr>
+          </thead>
+          <tbody id="vuln-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Assets -->
+    <div id="assets" class="section">
+      <div class="card">
+        <h2>Assets</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Asset</th>
+              <th>BU</th>
+              <th>Criticality</th>
+              <th>Propagated Risk</th>
+            </tr>
+          </thead>
+          <tbody id="asset-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Prioritization -->
+    <div id="prioritization" class="section">
+      <div class="card">
+        <h2>Remediation Prioritization (Ensemble)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Vuln</th>
+              <th>Asset</th>
+              <th>Risk</th>
+              <th>Pareto</th>
+              <th>Cost-Ben</th>
+              <th>Time</th>
+              <th>TOPSIS</th>
+            </tr>
+          </thead>
+          <tbody id="prio-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Freshness -->
+    <div id="freshness" class="section">
+      <div class="card">
+        <h2>Data Source Freshness</h2>
+        <div id="freshness-overall" style="margin-bottom: 1rem"></div>
+        <table>
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Age (days)</th>
+              <th>Threshold</th>
+              <th>Score</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="freshness-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      const API = "/api/v1";
+
+      // Tab switching
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab")
+            .forEach((t) => t.classList.remove("active"));
+          document
+            .querySelectorAll(".section")
+            .forEach((s) => s.classList.remove("active"));
+          tab.classList.add("active");
+          document.getElementById(tab.dataset.tab).classList.add("active");
+        });
+      });
+
+      function riskColor(r) {
+        if (r >= 0.8) return "var(--critical)";
+        if (r >= 0.6) return "var(--high)";
+        if (r >= 0.3) return "var(--medium)";
+        return "var(--low)";
+      }
+
+      function riskClass(r) {
+        if (r >= 0.8) return "critical";
+        if (r >= 0.6) return "high";
+        if (r >= 0.3) return "medium";
+        return "low";
+      }
+
+      async function load() {
+        try {
+          const [summary, pairs, vulns, assets, prio, fresh] =
+            await Promise.all([
+              fetch(API + "/risk/summary").then((r) => r.json()),
+              fetch(API + "/risk/pairs?limit=10").then((r) => r.json()),
+              fetch(API + "/vulnerabilities?limit=100").then((r) => r.json()),
+              fetch(API + "/assets?limit=100").then((r) => r.json()),
+              fetch(API + "/prioritization?limit=50").then((r) => r.json()),
+              fetch(API + "/freshness").then((r) => r.json()),
+            ]);
+
+          document.getElementById("loading").style.display = "none";
+
+          // Summary cards
+          const cards = document.getElementById("summary-cards");
+          const metrics = [
+            { label: "Total Pairs", value: summary.total_pairs, cls: "" },
+            {
+              label: "Mean Risk",
+              value: (summary.mean_risk || 0).toFixed(3),
+              cls: riskClass(summary.mean_risk),
+            },
+            {
+              label: "Max Risk",
+              value: (summary.max_risk || 0).toFixed(3),
+              cls: riskClass(summary.max_risk),
+            },
+            {
+              label: "P95 Risk",
+              value: (summary.p95_risk || 0).toFixed(3),
+              cls: riskClass(summary.p95_risk),
+            },
+            {
+              label: "Data Freshness",
+              value: ((summary.overall_freshness || 0) * 100).toFixed(0) + "%",
+              cls: summary.overall_freshness > 0.6 ? "low" : "critical",
+            },
+          ];
+          cards.innerHTML = metrics
+            .map(
+              (m) =>
+                `<div class="card"><div class="metric ${m.cls}">${m.value}</div><div class="label">${m.label}</div></div>`,
+            )
+            .join("");
+
+          // Top pairs
+          const tbody = document.getElementById("top-pairs");
+          tbody.innerHTML = (pairs.items || [])
+            .map(
+              (p) =>
+                `<tr><td>${p.vuln_id}</td><td>${p.asset_id}</td>
+             <td><div class="risk-bar"><div class="risk-bar-fill" style="width:${p.composite_risk * 100}%;background:${riskColor(p.composite_risk)}"></div></div> ${p.composite_risk.toFixed(3)}</td>
+             <td>#${p.final_rank}</td></tr>`,
+            )
+            .join("");
+
+          // Vulns
+          document.getElementById("vuln-table").innerHTML = (vulns.items || [])
+            .map(
+              (v) =>
+                `<tr><td>${v.id}</td><td>${v.cvss_base_score ?? "-"}</td><td>${v.has_public_exploit ? "Yes" : "No"}</td><td>${v.is_in_kev ? "Yes" : "No"}</td><td>${(v.composite_risk || 0).toFixed(3)}</td></tr>`,
+            )
+            .join("");
+
+          // Assets
+          document.getElementById("asset-table").innerHTML = (
+            assets.items || []
+          )
+            .map(
+              (a) =>
+                `<tr><td>${a.id}</td><td>${a.business_unit || "-"}</td><td>${a.criticality || "-"}</td><td>${(a.propagated_risk || 0).toFixed(3)}</td></tr>`,
+            )
+            .join("");
+
+          // Prioritization
+          document.getElementById("prio-table").innerHTML = (prio.items || [])
+            .map(
+              (p, i) =>
+                `<tr><td>${i + 1}</td><td>${p.vuln_id || ""}</td><td>${p.asset_id || ""}</td><td>${(p.composite_risk || 0).toFixed(3)}</td>
+             <td>${p.ranks?.pareto_rank || "-"}</td><td>${p.ranks?.cost_benefit_rank || "-"}</td>
+             <td>${p.ranks?.time_sensitive_rank || "-"}</td><td>${p.ranks?.topsis_rank || "-"}</td></tr>`,
+            )
+            .join("");
+
+          // Freshness
+          document.getElementById("freshness-overall").innerHTML =
+            `<span class="metric ${fresh.overall_freshness > 0.6 ? "low" : "critical"}">${(fresh.overall_freshness * 100).toFixed(0)}%</span>
+             <span class="label">Overall Data Freshness</span>`;
+          document.getElementById("freshness-table").innerHTML = (
+            fresh.sources || []
+          )
+            .map(
+              (s) =>
+                `<tr><td>${s.source}</td><td>${s.age_days === Infinity ? "∞" : s.age_days.toFixed(1)}</td><td>${s.threshold_days}</td>
+             <td>${(s.freshness_score * 100).toFixed(0)}%</td><td class="${s.is_stale ? "stale" : "fresh"}">${s.is_stale ? "STALE" : "OK"}</td></tr>`,
+            )
+            .join("");
+        } catch (e) {
+          document.getElementById("loading").textContent =
+            "Error loading data: " + e.message;
+        }
+      }
+
+      load();
+    </script>
+  </body>
+</html>

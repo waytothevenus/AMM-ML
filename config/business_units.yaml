@@ -1,0 +1,28 @@
+# Business Unit hierarchy and asset-to-BU mapping
+business_units:
+  - id: "bu_corporate"
+    name: "Corporate IT"
+    criticality: "high"
+    children:
+      - id: "bu_finance"
+        name: "Finance Systems"
+        criticality: "critical"
+      - id: "bu_hr"
+        name: "Human Resources"
+        criticality: "medium"
+  - id: "bu_operations"
+    name: "Operations"
+    criticality: "critical"
+    children:
+      - id: "bu_scada"
+        name: "SCADA / ICS"
+        criticality: "critical"
+      - id: "bu_network"
+        name: "Network Infrastructure"
+        criticality: "high"
+  - id: "bu_development"
+    name: "Development"
+    criticality: "medium"
+
+# Default BU for unassigned assets
+default_bu: "bu_corporate"

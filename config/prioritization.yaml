@@ -1,0 +1,34 @@
+# Prioritization algorithm configuration
+algorithms:
+  pareto:
+    enabled: true
+    objectives:
+      - "risk_score" # maximize reduction
+      - "remediation_cost" # minimize cost
+      - "time_to_exploit" # minimize (urgency)
+
+  cost_benefit:
+    enabled: true
+    min_benefit_ratio: 1.5 # minimum benefit/cost ratio to recommend
+
+  time_sensitive:
+    enabled: true
+    urgency_weights:
+      actively_exploited: 10.0
+      exploit_available: 5.0
+      disclosed_recent: 3.0 # disclosed < 7 days
+      disclosed_old: 1.0
+
+  multi_criteria:
+    enabled: true
+    method: "topsis" # "topsis", "ahp", or "promethee"
+    criteria_weights:
+      risk_score: 0.30
+      exploit_probability: 0.25
+      asset_criticality: 0.20
+      remediation_cost: 0.15
+      time_exposure: 0.10
+
+  ensemble:
+    enabled: true
+    aggregation: "rank_average" # "rank_average", "borda_count", "weighted_sum"

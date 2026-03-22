@@ -1,0 +1,25 @@
+# Remediation cost model parameters
+cost_model:
+  # Cost per remediation action type (abstract units)
+  action_costs:
+    patch: 1.0
+    workaround: 0.5
+    compensating_control: 0.3
+    accept_risk: 0.0
+    decommission: 2.0
+
+  # Downtime cost per hour per asset criticality tier
+  downtime_cost_per_hour:
+    critical: 100.0
+    high: 50.0
+    medium: 20.0
+    low: 5.0
+
+  # Breach cost estimates per impact category
+  breach_cost:
+    confidentiality: 500.0
+    integrity: 750.0
+    availability: 300.0
+
+  # Staff cost per hour (for remediation labor)
+  staff_cost_per_hour: 75.0

@@ -1,0 +1,79 @@
+# System-wide configuration for Vulnerability Risk Assessment System
+# All paths are relative to project root unless absolute
+
+system:
+  name: "Hybrid AMM+ML Vulnerability Risk Assessment"
+  version: "0.1.0"
+  log_level: "INFO"
+  daily_batch_time: "02:00" # 2 AM local time
+  feedback_loop_passes: 2 # ML→Markov→ML passes per cycle
+
+data:
+  imports_dir: "data/imports"
+  db_dir: "data/db"
+  graph_dir: "data/graph"
+  knowledge_graph_db: "data/db/knowledge_graph.db"
+  feature_store_db: "data/db/feature_store.duckdb"
+  reports_dir: "data/reports"
+
+models:
+  base_dir: "models"
+  elp_dir: "models/elp"
+  isa_dir: "models/isa"
+  acc_dir: "models/acc"
+  embeddings_dir: "models/embeddings"
+  embedding_model_name: "all-MiniLM-L6-v2"
+
+layer0:
+  graph_backend: "networkx" # "networkx" or "neo4j"
+  neo4j_uri: "bolt://localhost:7687"
+  neo4j_user: "neo4j"
+  neo4j_password: "changeme"
+  freshness_thresholds_days:
+    nvd: 7
+    exploitdb: 14
+    cisa_kev: 7
+    otx: 14
+    cmdb: 30
+    vendor_advisories: 14
+    network_scan: 7
+    siem_alerts: 3
+
+layer1:
+  embedding_backend: "tfidf" # "tfidf" (lightweight) or "transformer" (heavyweight)
+  tfidf_max_features: 5000
+  tfidf_svd_components: 128
+  topological_max_hops: 3
+
+layer2:
+  default_model_format: "joblib" # "joblib" or "onnx"
+  confidence_decay_halflife_days: 90 # model confidence halves every N days
+  ab_test_holdout_fraction: 0.2
+
+layer3:
+  risk_states:
+    - "Unknown"
+    - "Disclosed"
+    - "ExploitAvailable"
+    - "ActivelyExploited"
+    - "Mitigated"
+    - "Remediated"
+  absorbing_states:
+    - "Remediated"
+  default_half_life_days: 30
+  coupling_max_hops: 2 # limit inter-asset coupling propagation
+
+layer4:
+  prioritization_weights:
+    pareto: 0.25
+    cost_benefit: 0.20
+    time_sensitive: 0.25
+    multi_criteria: 0.15
+    ensemble: 0.15
+  forecast_horizon_days: 30
+
+layer5:
+  host: "127.0.0.1"
+  port: 8080
+  static_dir: "src/layer5_presentation/static"
+  enable_graphql: true

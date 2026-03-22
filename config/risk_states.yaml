@@ -1,0 +1,45 @@
+# Markov risk state definitions
+states:
+  - id: 0
+    name: "Unknown"
+    description: "Vulnerability exists but is not yet publicly disclosed"
+    color: "#888888"
+
+  - id: 1
+    name: "Disclosed"
+    description: "Vulnerability publicly disclosed (CVE assigned)"
+    color: "#FFA500"
+
+  - id: 2
+    name: "ExploitAvailable"
+    description: "Public exploit code or PoC is available"
+    color: "#FF4500"
+
+  - id: 3
+    name: "ActivelyExploited"
+    description: "Vulnerability is being actively exploited in the wild"
+    color: "#FF0000"
+
+  - id: 4
+    name: "Mitigated"
+    description: "Workaround or compensating control is in place"
+    color: "#4682B4"
+
+  - id: 5
+    name: "Remediated"
+    description: "Patch applied or vulnerability fully resolved (absorbing)"
+    color: "#228B22"
+
+# Default initial distribution (before warm-start adjustment)
+default_initial_distribution: [0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
+
+# Base transition probability matrix (before ML parameterization)
+# Rows = from state, Columns = to state
+# This is the fallback when ML predictions are unavailable
+base_tpm:
+  - [0.80, 0.15, 0.03, 0.01, 0.01, 0.00] # Unknown →
+  - [0.00, 0.70, 0.15, 0.05, 0.05, 0.05] # Disclosed →
+  - [0.00, 0.00, 0.60, 0.20, 0.10, 0.10] # ExploitAvailable →
+  - [0.00, 0.00, 0.00, 0.50, 0.25, 0.25] # ActivelyExploited →
+  - [0.00, 0.05, 0.05, 0.05, 0.70, 0.15] # Mitigated →
+  - [0.00, 0.00, 0.00, 0.00, 0.00, 1.00] # Remediated → (absorbing)

@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Project data & models (generated at runtime)
+data/db/
+data/graph/
+data/reports/
+data/imports/
+models/
+transfer/
+
+# Staging bundles
+transfer_*.tar.gz
+*.tar.gz
+
+# DuckDB
+*.duckdb
+*.duckdb.wal
+
+# GraphML snapshots
+*.graphml
+
+# Joblib model files
+*.joblib
+
+# Pytest / coverage
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Temp files
+__check_tmp.pyc
+*.log
