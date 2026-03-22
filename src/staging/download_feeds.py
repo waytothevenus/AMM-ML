@@ -30,8 +30,8 @@ FEED_SOURCES = {
         "filename": "nvd_cves_{date}.json",
     },
     "cisa_kev": {
-        "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
-        "alt_url": "https://cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+        "url": "https://raw.githubusercontent.com/cisagov/known-exploited-vulnerabilities-catalog/main/known_exploited_vulnerabilities.json",
+        "alt_url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
         "description": "CISA Known Exploited Vulnerabilities",
         "filename": "cisa_kev_{date}.json",
     },
