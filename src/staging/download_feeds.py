@@ -16,7 +16,7 @@ import logging
 import os
 import shutil
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -31,6 +31,7 @@ FEED_SOURCES = {
     },
     "cisa_kev": {
         "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+        "alt_url": "https://cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
         "description": "CISA Known Exploited Vulnerabilities",
         "filename": "cisa_kev_{date}.json",
     },
@@ -59,7 +60,7 @@ def create_transfer_bundle(output_dir: Path) -> Path:
         │   └── acc_1.0.0.joblib
         └── checksums.sha256
     """
-    date_str = datetime.utcnow().strftime("%Y%m%d")
+    date_str = datetime.now(timezone.utc).strftime("%Y%m%d")
     bundle_dir = output_dir / f"transfer_{date_str}"
     data_dir = bundle_dir / "data"
     models_dir = bundle_dir / "models"
@@ -69,7 +70,7 @@ def create_transfer_bundle(output_dir: Path) -> Path:
 
     # Create manifest
     manifest = {
-        "created_at": datetime.utcnow().isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
         "created_by": "staging.download_feeds",
         "feeds": {},
         "models": [],
@@ -87,16 +88,29 @@ def create_transfer_bundle(output_dir: Path) -> Path:
         filename = feed_info["filename"].format(date=date_str)
         dest = data_dir / filename
 
-        try:
-            _download_file(feed_info["url"], dest)
-            manifest["feeds"][feed_name] = {
-                "status": "downloaded",
-                "filename": filename,
-                "size_bytes": dest.stat().st_size,
-            }
-        except Exception as exc:
-            logger.error("Failed to download %s: %s", feed_name, exc)
-            manifest["feeds"][feed_name] = {"status": "failed", "error": str(exc)}
+        urls = [feed_info["url"]]
+        if feed_info.get("alt_url"):
+            urls.append(feed_info["alt_url"])
+
+        downloaded = False
+        last_exc = None
+        for url in urls:
+            try:
+                _download_file(url, dest)
+                manifest["feeds"][feed_name] = {
+                    "status": "downloaded",
+                    "filename": filename,
+                    "size_bytes": dest.stat().st_size,
+                }
+                downloaded = True
+                break
+            except Exception as exc:
+                last_exc = exc
+                logger.warning("URL failed (%s), trying next: %s", url, exc)
+
+        if not downloaded:
+            logger.error("Failed to download %s: %s", feed_name, last_exc)
+            manifest["feeds"][feed_name] = {"status": "failed", "error": str(last_exc)}
 
     # Write manifest
     manifest_path = bundle_dir / "manifest.json"
@@ -118,7 +132,10 @@ def _download_file(url: str, dest: Path) -> None:
     ctx = ssl.create_default_context()
     logger.info("Downloading %s → %s", url, dest.name)
 
-    req = urllib.request.Request(url, headers={"User-Agent": "VulnRiskAssessment/1.0"})
+    req = urllib.request.Request(url, headers={
+        "User-Agent": "Mozilla/5.0 (compatible; VulnRiskAssessment/1.0)",
+        "Accept": "application/json, */*",
+    })
     with urllib.request.urlopen(req, context=ctx, timeout=120) as response:
         with open(dest, "wb") as f:
             shutil.copyfileobj(response, f)
