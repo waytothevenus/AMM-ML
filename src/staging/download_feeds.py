@@ -30,10 +30,15 @@ FEED_SOURCES = {
         "filename": "nvd_cves_{date}.json",
     },
     "cisa_kev": {
-        "url": "https://raw.githubusercontent.com/cisagov/known-exploited-vulnerabilities-catalog/main/known_exploited_vulnerabilities.json",
-        "alt_url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+        "urls": [
+            "https://raw.githubusercontent.com/cisagov/known-exploited-vulnerabilities-catalog/main/known_exploited_vulnerabilities.json",
+            "https://raw.githubusercontent.com/cisagov/known-exploited-vulnerabilities/main/known_exploited_vulnerabilities.json",
+            "https://raw.githubusercontent.com/cisagov/known-exploited-vulnerabilities-catalog/master/known_exploited_vulnerabilities.json",
+            "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+        ],
         "description": "CISA Known Exploited Vulnerabilities",
         "filename": "cisa_kev_{date}.json",
+        "manual_hint": "Download JSON from https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
     },
     "exploitdb": {
         "description": "Exploit-DB CSV (manually download from exploit-db.com/download)",
@@ -88,9 +93,7 @@ def create_transfer_bundle(output_dir: Path) -> Path:
         filename = feed_info["filename"].format(date=date_str)
         dest = data_dir / filename
 
-        urls = [feed_info["url"]]
-        if feed_info.get("alt_url"):
-            urls.append(feed_info["alt_url"])
+        urls = feed_info.get("urls", [feed_info["url"]] if "url" in feed_info else [])
 
         downloaded = False
         last_exc = None
@@ -106,10 +109,15 @@ def create_transfer_bundle(output_dir: Path) -> Path:
                 break
             except Exception as exc:
                 last_exc = exc
-                logger.warning("URL failed (%s), trying next: %s", url, exc)
+                logger.warning("URL failed (%s): %s", url, exc)
 
         if not downloaded:
-            logger.error("Failed to download %s: %s", feed_name, last_exc)
+            hint = feed_info.get("manual_hint", "")
+            logger.error(
+                "Failed to download %s from all URLs: %s%s",
+                feed_name, last_exc,
+                f"\n         Manual alternative: {hint}" if hint else "",
+            )
             manifest["feeds"][feed_name] = {"status": "failed", "error": str(last_exc)}
 
     # Write manifest
