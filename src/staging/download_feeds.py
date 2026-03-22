@@ -30,15 +30,10 @@ FEED_SOURCES = {
         "filename": "nvd_cves_{date}.json",
     },
     "cisa_kev": {
-        "urls": [
-            "https://raw.githubusercontent.com/cisagov/known-exploited-vulnerabilities-catalog/main/known_exploited_vulnerabilities.json",
-            "https://raw.githubusercontent.com/cisagov/known-exploited-vulnerabilities/main/known_exploited_vulnerabilities.json",
-            "https://raw.githubusercontent.com/cisagov/known-exploited-vulnerabilities-catalog/master/known_exploited_vulnerabilities.json",
-            "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
-        ],
-        "description": "CISA Known Exploited Vulnerabilities",
-        "filename": "cisa_kev_{date}.json",
-        "manual_hint": "Download JSON from https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+        "description": "CISA Known Exploited Vulnerabilities (download CSV from catalog page)",
+        "filename": "cisa_kev_{date}.csv",
+        "manual": True,
+        "manual_hint": "Download CSV from https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
     },
     "exploitdb": {
         "description": "Exploit-DB CSV (manually download from exploit-db.com/download)",
