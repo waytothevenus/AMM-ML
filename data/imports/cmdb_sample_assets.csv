@@ -1,0 +1,21 @@
+asset_id,hostname,ip_address,os,criticality,business_unit,network_zone,cpe_list,connects_to
+asset-web-01,webserver01,10.0.1.10,Ubuntu 22.04,high,Engineering,dmz,"cpe:2.3:a:apache:http_server:2.4.51:*:*:*:*:*:*:*,cpe:2.3:a:openssl:openssl:3.0.7:*:*:*:*:*:*:*,cpe:2.3:o:canonical:ubuntu_linux:22.04:*:*:*:*:*:*:*",asset-app-01
+asset-web-02,webserver02,10.0.1.11,Ubuntu 22.04,high,Engineering,dmz,"cpe:2.3:a:apache:http_server:2.4.54:*:*:*:*:*:*:*,cpe:2.3:a:php:php:8.1.12:*:*:*:*:*:*:*,cpe:2.3:o:canonical:ubuntu_linux:22.04:*:*:*:*:*:*:*",asset-app-01
+asset-app-01,appserver01,10.0.2.10,Red Hat Enterprise Linux 9,critical,Engineering,internal,"cpe:2.3:a:oracle:java_se:17.0.4:*:*:*:*:*:*:*,cpe:2.3:a:apache:tomcat:10.0.27:*:*:*:*:*:*:*,cpe:2.3:o:redhat:enterprise_linux:9.0:*:*:*:*:*:*:*","asset-db-01,asset-db-02"
+asset-app-02,appserver02,10.0.2.11,Red Hat Enterprise Linux 9,critical,Engineering,internal,"cpe:2.3:a:oracle:java_se:17.0.4:*:*:*:*:*:*:*,cpe:2.3:a:apache:log4j:2.17.1:*:*:*:*:*:*:*,cpe:2.3:o:redhat:enterprise_linux:9.0:*:*:*:*:*:*:*","asset-db-01,asset-cache-01"
+asset-db-01,dbserver01,10.0.3.10,Red Hat Enterprise Linux 8,critical,Engineering,internal,"cpe:2.3:a:oracle:mysql:8.0.28:*:*:*:*:*:*:*,cpe:2.3:a:openssl:openssl:1.1.1q:*:*:*:*:*:*:*,cpe:2.3:o:redhat:enterprise_linux:8.0:*:*:*:*:*:*:*",
+asset-db-02,dbserver02,10.0.3.11,Ubuntu 20.04,critical,Engineering,internal,"cpe:2.3:a:postgresql:postgresql:14.5:*:*:*:*:*:*:*,cpe:2.3:o:canonical:ubuntu_linux:20.04:*:*:*:*:*:*:*",
+asset-cache-01,cacheserver01,10.0.2.20,Ubuntu 22.04,medium,Engineering,internal,"cpe:2.3:a:redis:redis:7.0.5:*:*:*:*:*:*:*,cpe:2.3:o:canonical:ubuntu_linux:22.04:*:*:*:*:*:*:*",
+asset-mail-01,mailserver01,10.0.4.10,Windows Server 2019,high,IT Operations,dmz,"cpe:2.3:a:microsoft:exchange_server:2019:*:*:*:*:*:*:*,cpe:2.3:o:microsoft:windows_server_2019:-:*:*:*:*:*:*:*",asset-dc-01
+asset-dc-01,domainctrl01,10.0.5.10,Windows Server 2022,critical,IT Operations,internal,"cpe:2.3:o:microsoft:windows_server_2022:-:*:*:*:*:*:*:*",
+asset-dc-02,domainctrl02,10.0.5.11,Windows Server 2022,critical,IT Operations,internal,"cpe:2.3:o:microsoft:windows_server_2022:-:*:*:*:*:*:*:*",
+asset-ws-01,workstation01,10.0.10.10,Windows 11,medium,Finance,corporate,"cpe:2.3:o:microsoft:windows_11:22h2:*:*:*:*:*:*:*,cpe:2.3:a:microsoft:office:2021:*:*:*:*:*:*:*,cpe:2.3:a:google:chrome:110.0.5481.77:*:*:*:*:*:*:*",
+asset-ws-02,workstation02,10.0.10.11,Windows 11,medium,Finance,corporate,"cpe:2.3:o:microsoft:windows_11:22h2:*:*:*:*:*:*:*,cpe:2.3:a:microsoft:office:2021:*:*:*:*:*:*:*,cpe:2.3:a:mozilla:firefox:109.0:*:*:*:*:*:*:*",
+asset-ws-03,workstation03,10.0.10.12,Windows 10,low,HR,corporate,"cpe:2.3:o:microsoft:windows_10:21h2:*:*:*:*:*:*:*,cpe:2.3:a:google:chrome:110.0.5481.77:*:*:*:*:*:*:*",
+asset-ws-04,devworkstation01,10.0.11.10,macOS,medium,Engineering,corporate,"cpe:2.3:o:apple:macos:13.1:*:*:*:*:*:*:*,cpe:2.3:a:google:chrome:110.0.5481.77:*:*:*:*:*:*:*,cpe:2.3:a:docker:docker:20.10.21:*:*:*:*:*:*:*",
+asset-vpn-01,vpngateway01,10.0.0.5,Linux,high,IT Operations,dmz,"cpe:2.3:a:openvpn:openvpn:2.5.8:*:*:*:*:*:*:*,cpe:2.3:a:openssl:openssl:3.0.7:*:*:*:*:*:*:*,cpe:2.3:o:canonical:ubuntu_linux:22.04:*:*:*:*:*:*:*",
+asset-fw-01,firewall01,10.0.0.1,PAN-OS,critical,IT Operations,perimeter,"cpe:2.3:o:paloaltonetworks:pan-os:10.2.3:*:*:*:*:*:*:*",
+asset-jenkins-01,jenkins01,10.0.6.10,Ubuntu 22.04,high,Engineering,internal,"cpe:2.3:a:jenkins:jenkins:2.375.1:*:*:*:*:*:*:*,cpe:2.3:a:oracle:java_se:11.0.17:*:*:*:*:*:*:*,cpe:2.3:o:canonical:ubuntu_linux:22.04:*:*:*:*:*:*:*",asset-app-01
+asset-gitlab-01,gitlab01,10.0.6.11,Ubuntu 22.04,high,Engineering,internal,"cpe:2.3:a:gitlab:gitlab:15.6.3:*:*:*:*:*:*:*,cpe:2.3:a:openssl:openssl:3.0.7:*:*:*:*:*:*:*,cpe:2.3:o:canonical:ubuntu_linux:22.04:*:*:*:*:*:*:*",
+asset-monitor-01,monitoring01,10.0.7.10,Ubuntu 22.04,medium,IT Operations,internal,"cpe:2.3:a:grafana:grafana:9.3.2:*:*:*:*:*:*:*,cpe:2.3:a:elastic:elasticsearch:8.5.3:*:*:*:*:*:*:*,cpe:2.3:o:canonical:ubuntu_linux:22.04:*:*:*:*:*:*:*",
+asset-nas-01,fileserver01,10.0.8.10,Synology DSM,medium,IT Operations,internal,"cpe:2.3:o:synology:diskstation_manager:7.1:*:*:*:*:*:*:*",
