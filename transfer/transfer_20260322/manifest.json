@@ -1,0 +1,19 @@
+{
+  "created_at": "2026-03-22T16:45:52.936739+00:00",
+  "created_by": "staging.download_feeds",
+  "feeds": {
+    "nvd": {
+      "status": "downloaded",
+      "filename": "nvd_cves_20260322.json",
+      "size_bytes": 4000434
+    },
+    "cisa_kev": {
+      "status": "failed",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "exploitdb": {
+      "status": "manual_required"
+    }
+  },
+  "models": []
+}
